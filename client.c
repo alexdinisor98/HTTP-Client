@@ -12,7 +12,7 @@
 #include "jsmn.h"
 #define JSMN_HEADER
 
-//sursa "jsoneq": github
+// source "jsoneq": github
 static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
   if (tok->type == JSMN_STRING && (int)strlen(s) == tok->end - tok->start &&
       strncmp(json + tok->start, s, tok->end - tok->start) == 0) {
@@ -21,7 +21,7 @@ static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
   return -1;
 }
 
-//parsare cookies in header-ul de request
+// parsing cookies in the header of  request
 char* get_cookies(char* response){
 
 	int offset_cookie = 12;
@@ -71,7 +71,7 @@ char* get_ip(char* name){
 	return service;
 }
 
-//parsare json pt logare cu username si password
+// parsing JSON for logging with username and password
 void parse_for_log(char* string_json, int r, jsmn_parser p, jsmntok_t *t, 
 	char* method, char* url, char* type, char* user, char* pass){
 	int i;
@@ -97,7 +97,7 @@ void parse_for_log(char* string_json, int r, jsmn_parser p, jsmntok_t *t,
   	}
 }
 
-//parsare json pentru jwt cu token pt authorization header
+// parsing json for jwt with token for authorization header
 void parse_for_jwt(char* string_json, int r, jsmn_parser p, jsmntok_t *t, 
 	char* method, char* url, char* token, char* id){
 	int i;
@@ -120,7 +120,7 @@ void parse_for_jwt(char* string_json, int r, jsmn_parser p, jsmntok_t *t,
   	}
 }
 
-//parsare json pentru starea vremii
+// parsing json for weather status
 void parse_for_weather(char* string_json, int r, jsmn_parser p, jsmntok_t *t, 
 	char** methods, char** urls, char* type, char* q, char* appid){
 	int i;
@@ -187,14 +187,14 @@ int main(int argc, char *argv[]) {
 
   	final_cookie = get_cookies(response);
 
-  	//string json din response cautat dupa new line-uri
+  	//string json for response searched after new lines
     string = strstr(response, "\r\n\r\n");
    	string_json = string + 4;
 
    	jsmn_init(&p);
   	r = jsmn_parse(&p, string_json, strlen(string_json), t,
                  sizeof(t) / sizeof(t[0]));
-  	//verificare erori
+  	// error checking
   	if (r < 0) {
     	printf("Failed to parse JSON: %d\n", r);
     	return 1;
@@ -206,7 +206,7 @@ int main(int argc, char *argv[]) {
 
   	parse_for_log(string_json, r, p, t, method, url, type, user, pass);
 
-  	//concatenare credentiale de login in string-ul "log"
+  	// concat credentials for login in string "log"
   	int len = strlen("username=") + strlen(user) + strlen("&password=") + strlen(pass);
 	char *log = calloc(len , sizeof(char));
 	strcat(log, "username=");
@@ -248,7 +248,7 @@ int main(int argc, char *argv[]) {
 
 	parse_for_jwt(string_json, r, p, t, method, url, token, id);
 
-	//concatenare raspunsuri si id din json
+	// concat answers and id from json
   	len = 100;
   	char* answer = calloc(len, sizeof(char));
   	strcat(answer,"raspuns1=omul&raspuns2=numele&id=");
@@ -339,7 +339,7 @@ int main(int argc, char *argv[]) {
   	strcpy(method1, methods[0]);
   	strcpy(method2, methods[1]);
 
-  	//concatenare starea vremii si request pe url-ul de vreme
+  	// concat weather status and request on weather url
 	char *weather = calloc(strlen("q=") + strlen(q) + strlen("&APPID=") + strlen(appid), sizeof(char));
 	strcat(weather, "q=");
 	strcat(weather, q);
@@ -366,7 +366,7 @@ int main(int argc, char *argv[]) {
     close_connection(sockfd);
 
     // TASK 5.1
-    //trimitere raspuns in fromat json catre server
+    // sending response in json format to server
 	char* weather_forecast = strstr(response,"\r\n\r\n");
 
     sockfd = open_connection(ip_server, 8081, AF_INET, SOCK_STREAM, 0);
